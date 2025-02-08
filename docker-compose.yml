@@ -1,0 +1,6 @@
+services:
+  smail:
+    image: registry.ohrenpirat.de:5000/mwildt/smail
+    build:
+      context: .
+      dockerfile: smail.containerfile
