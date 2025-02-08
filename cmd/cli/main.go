@@ -2,43 +2,16 @@ package main
 
 import (
 	"encoding/base64"
-	"encoding/json"
 	"flag"
-	"io/ioutil"
+	"github.com/mwildt/golang-acme-extract/pkg/acme"
 	"log"
 	"os"
 	"path/filepath"
 )
 
-type AcmeContainer struct {
-	Acmetls struct {
-		Certificates []Certificate `json:"Certificates"`
-	} `json:"acmetls"`
-}
-
-type Certificate struct {
-	Domain struct {
-		Main string `json:"main"`
-	} `json:"domain"`
-	Certificate string `json:"certificate"`
-	Key         string `json:"key"`
-	Store       string `json:"Store"`
-}
-
 func checkError(err error) {
 	if err != nil {
 		log.Panic(err)
-	}
-}
-
-func readAcmeFile(path string) (AcmeContainer, error) {
-	var container AcmeContainer
-	if content, err := os.ReadFile(path); err != nil {
-		return container, err
-	} else if err := json.Unmarshal(content, &container); err != nil {
-		return container, err
-	} else {
-		return container, nil
 	}
 }
 
@@ -65,9 +38,9 @@ func main() {
 	flag.StringVar(&crt_file_extention, "crt-ext", ".crt", "Certificate file extension")
 	flag.StringVar(&key_file_extention, "key-ext", ".key", "Key file extension")
 
-	flag.Parse() // after declaring flags we need to call it
+	flag.Parse()
 
-	container, err := readAcmeFile(src)
+	container, err := acme.ReadAcmeFile(src)
 	checkError(err)
 
 	checkError(os.MkdirAll(target, os.ModePerm))
@@ -78,13 +51,13 @@ func main() {
 			crt_path := filepath.Join(target, crt_fileame)
 			crt_decoded, err := base64.StdEncoding.DecodeString(cert.Certificate)
 			checkError(err)
-			ioutil.WriteFile(crt_path, crt_decoded, 0644)
+			os.WriteFile(crt_path, crt_decoded, 0644)
 
 			key_fileame := cert.Domain.Main + key_file_extention
 			key_path := filepath.Join(target, key_fileame)
 			key_decoded, err := base64.StdEncoding.DecodeString(cert.Key)
 			checkError(err)
-			ioutil.WriteFile(key_path, key_decoded, 0644)
+			os.WriteFile(key_path, key_decoded, 0644)
 		}
 	}
 

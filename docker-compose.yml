@@ -1,6 +1,9 @@
 services:
-  smail:
-    image: registry.ohrenpirat.de:5000/mwildt/smail
+  acme:
+    image: registry.ohrenpirat.de:5000/mwildt/acme-helper
     build:
       context: .
-      dockerfile: smail.containerfile
+      dockerfile: acme.containerfile
+    environment:
+      ACME_FILE: "./path/to/acme.json"
+      CERTIFICATE_DIR: "./path/to/certs"

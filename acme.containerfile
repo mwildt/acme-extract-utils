@@ -4,7 +4,7 @@ RUN mkdir /src
 WORKDIR /src
 COPY . /src
 
-RUN CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -o application -tags prod ./cmd/smail/main.go
+RUN CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -o application -tags prod ./cmd/container/main.go
 RUN ls -la
 
 FROM scratch
